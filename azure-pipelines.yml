@@ -1,19 +1,24 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  branches:
+    include:
+      - main  # Trigger on changes to the 'main' branch
 
 pool:
-  vmImage: ubuntu-latest
+  name: dwipool
+  demands:
+    - agent.name -equals terraformagent
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables:
+  terraformVersion: '1.3.7'  # Terraform version
+  backendResourceGroup: 'rg-tf-backend'  # Azure Resource Group where the storage account exists
+  backendStorageAccount: 'rgbackendstor'  # Your Azure Storage Account
+  backendContainer: 'tfstate'  # The container name where the state files will be stored
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+parameters:
+  - name: environment
+    type: string
+    displayName: 'Select Environment'
+    values:
+      - dev
+      - prod
+    default: 'dev'
